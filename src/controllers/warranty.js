@@ -81,14 +81,21 @@ router.post('/create', async(req, res) => {
                 <p>Data da compra: ${moment(new Date()).format('LLL')}</p>
                 <p>A garantia &eacute; v&aacute;lida pros pr&oacute;ximos <span style="text-decoration: underline;">${days_to_warrante} dias</span> a partir da data da compra.</p>
                 <hr />
-                <p>&nbsp;</p>
-                <p>At&eacute; a pr&oacute;xima!</p>
-                <p>&nbsp;</p>`
+                <p>&nbsp;<strong>A troca está condicionada as seguintes condições</strong>: ${user.warranties_obs}</p>
+                <p>At&eacute; a pr&oacute;xima!</p>`
                 // html body
             };
             await transporter.sendMail(mailOptions);
         }
-        return res.send({warranty});
+        return res.send({warranty, whatsapp_link: data.client_telephone == 0 ? null : `https://api.whatsapp.com/send?phone=55${encodeURIComponent(data.client_telephone)}&text=${encodeURIComponent(`Olá, sou ${user.name} da loja ${user.company_name}. 
+Segue o token gerado para a garantia do produto ${data.product_name}: ${data.token}
+        
+Data da compra: ${moment(Date.now()).format('LLL')}
+O token vale para até ${days_to_warrante} dias após a data da compra.
+
+A troca está condicionada as seguintes observações: ${user.warranties_obs}.
+        
+Volte sempre!!`)}`});
     } catch (error) {
         return res.status(400).send(error);
     }
