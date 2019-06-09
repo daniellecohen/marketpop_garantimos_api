@@ -124,23 +124,23 @@ router.put('/:token/exchange', async(req, res) => {
 
         await Warranty.findOneAndUpdate({token: req.params.token}, {warranty_date: new_warranty_date, exchanges: exchange}, {new: false}, async(err, warr) => {
             if(!err){
-                var mailOptions = {
-                    from: `${user.name}, <${user.email}>`, // sender address
-                    to: data.email, // list of receivers
-                    subject: "Garantimos!", // Subject line
-                    text: "Feedback da troca realizada", // plain text body
-                    html: `<p><strong>A realiza&ccedil;&atilde;o da troca ocorreu com sucesso.</strong></p>
-                    <p>Estamos reenviando o token para que voc&ecirc; utilize em caso de novo problema relativo ao produto adquirido</p>
-                    <ul>
-                    <li>${warranty.token}</li>
-                    </ul>
-                    <p>Token v&aacute;lido para os pr&oacute;ximos ${days} dias ap&oacute;s a data da troca</p>
-                    <p>Data da troca: ${moment(new Date()).format('LLL')}</p>
-                    <p>&nbsp;</p>
-                    <p>At&eacute; a pr&oacute;xima!</p>`
-                    // html body
-                };
-                await transporter.sendMail(mailOptions);
+                // var mailOptions = {
+                //     from: `Garantimos!, <garantimos.noreply@gmail.com>`, // sender address
+                //     to: warranty.client_email, // list of receivers
+                //     subject: "Garantimos!", // Subject line
+                //     text: "Feedback da troca realizada", // plain text body
+                //     html: `<p><strong>A realiza&ccedil;&atilde;o da troca ocorreu com sucesso.</strong></p>
+                //     <p>Estamos reenviando o token para que voc&ecirc; utilize em caso de novo problema relativo ao produto adquirido</p>
+                //     <ul>
+                //     <li>${warranty.token}</li>
+                //     </ul>
+                //     <p>Token v&aacute;lido para os pr&oacute;ximos ${days} dias ap&oacute;s a data da troca</p>
+                //     <p>Data da troca: ${moment(new Date()).format('LLL')}</p>
+                //     <p>&nbsp;</p>
+                //     <p>At&eacute; a pr&oacute;xima!</p>`
+                //     // html body
+                // };
+                // await transporter.sendMail(mailOptions);
                 return res.send({success: 'successfully updated'});
             }
             else
