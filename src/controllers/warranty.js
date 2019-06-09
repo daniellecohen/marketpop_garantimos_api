@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 const express = require('express');
-const moment = require('moment');
+const moment = require('moment-timezone');
 require('moment/locale/pt-br');
 const nodemailer = require('nodemailer');
 const puretext = require('puretext');
@@ -51,7 +51,6 @@ router.post('/create', async(req, res) => {
         let days_to_warrante = data.warranty_date;
         let date = new Date().setDate(new Date().getDate()+days_to_warrante);
         data.warranty_date = new Date(date);
-        
         data.client_name = `Cliente ${Date.now()}`;
         data.exchange = 0;
 
@@ -78,7 +77,7 @@ router.post('/create', async(req, res) => {
                 <p><strong>Informa&ccedil;&otilde;es da compra:</strong></p>
                 <p>Local: ${user.company_name}</p>
                 <p>Vendedor: ${user.name}</p>
-                <p>Data da compra: ${moment(new Date()).format('LLL')}</p>
+                <p>Data da compra: ${moment(new Date()).tz("America/Sao_Paulo").format('LLL')}</p>
                 <p>A garantia &eacute; v&aacute;lida pros pr&oacute;ximos <span style="text-decoration: underline;">${days_to_warrante} dias</span> a partir da data da compra.</p>
                 <hr />
                 <p>&nbsp;<strong>A troca está condicionada as seguintes condições</strong>: ${user.warranties_obs}</p>
@@ -90,7 +89,7 @@ router.post('/create', async(req, res) => {
         return res.send({warranty, whatsapp_link: data.client_telephone == 0 ? null : `https://api.whatsapp.com/send?phone=55${encodeURIComponent(data.client_telephone)}&text=${encodeURIComponent(`Olá, sou ${user.name} da loja ${user.company_name}. 
 Segue o token gerado para a garantia do produto ${data.product_name}: ${data.token}
         
-Data da compra: ${moment(Date.now()).format('LLL')}
+Data da compra: ${moment(Date.now()).tz("America/Sao_Paulo").format('LLL')}
 O token vale para até ${days_to_warrante} dias após a data da compra.
 
 A troca está condicionada as seguintes observações: ${user.warranties_obs}.
@@ -103,12 +102,12 @@ Volte sempre!!`)}`});
 
 router.post('/:token', async(req, res) => {
     try {
-        const user = await User.findOne({_id: req.tokendecoded});
-        const warranty = '';
-
+        const user = await User.findOne({_id: req.tokendecoded}).populate('warranties');
+        let warranty = '';
         for(_warranty of user.warranties) {
-            if(_warranty.token == req.params.token)
+            if(_warranty.token == req.params.token) {
                 warranty = _warranty
+            }
         }
 
         if(warranty == '')
