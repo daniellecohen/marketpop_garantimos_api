@@ -103,10 +103,16 @@ Volte sempre!!`)}`});
 
 router.post('/:token', async(req, res) => {
     try {
-        const warranty = await Warranty.findOne({token: req.params.token});
+        const user = await User.findOne({_id: req.tokendecoded});
+        const warranty = '';
 
-        if(!warranty)
-            return res.status(400).send({error: 'item doesnt exist'});
+        for(_warranty of user.warranties) {
+            if(_warranty.token == req.params.token)
+                warranty = _warranty
+        }
+
+        if(warranty == '')
+            return res.status(400).send({error: 'item doesnt exist on your warranties'});
         
         if(new Date(warranty.warranty_date) > new Date()) {
             return res.send({warranty});
