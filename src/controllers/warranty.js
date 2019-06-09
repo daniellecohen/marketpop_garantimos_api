@@ -59,30 +59,35 @@ router.post('/create', async(req, res) => {
 
         user.warranties.push(warranty);
         await User.findOneAndUpdate({_id: user._id}, user, {new: false}, async (err, warr) => {
-            if(data.email != 'no email') {
-                var mailOptions = {
-                    from: `${user.name}, <${user.email}>`, // sender address
-                    to: [data.email], // list of receivers
-                    subject: "Garantimos!", // Subject line
-                    text: "Olá, estamos aqui pra lhe entregar o token de garantia", // plain text body
-                    html: `<p><strong>Ol&aacute;! Viemos entregar o token referente a garantia da sua compra.</strong></p>
-                    <p>O e-mail &eacute; referente a compra de um(a) ${warranty.product_name} no valor de R$${warranty.product_price.toString().substr(0, warranty.product_price.toString().length-2)},${warranty.product_price.toString().substr(warranty.product_price.toString().length-2, warranty.product_price.toString().length)}</p>
-                    <p>Data da compra: ${moment(new Date()).format('LLL')}</p>
-                    <p>A garantia &eacute; v&aacute;lida pros pr&oacute;ximos <span style="text-decoration: underline;">${days_to_warrante} dias</span> a partir da data da compra.</p>
-                    <p>&nbsp;</p>
-                    <p>Utilize-se deste&nbsp;<em>token</em> para realizar a troca do produto</p>
-                    <ul>
-                    <li>${warranty.token}</li>
-                    </ul>
-                    <p>&nbsp;</p>
-                    <p>At&eacute; a pr&oacute;xima!</p>
-                    <p>&nbsp;</p>`
-                    // html body
-                };
-                await transporter.sendMail(mailOptions);
-            }
+            if(err)
+                return res.status(400).send(err);
         });
-
+        if(data.email != 'no email') {
+            var mailOptions = {
+                from: `Garantimos!, <garantimos@gmail.com>`, // sender address
+                to: data.client_email, // list of receivers
+                subject: "Garantimos!", // Subject line
+                text: "Olá, estamos aqui pra lhe entregar o token de garantia", // plain text body
+                html: `<p><strong>Ol&aacute;! Viemos entregar o token referente a garantia da sua compra.</strong></p>
+                <p>O e-mail &eacute; referente a compra de um(a) ${data.product_name} no valor de R$${data.product_price.toString().substr(0, data.product_price.toString().length-2)},${data.product_price.toString().substr(data.product_price.toString().length-2, data.product_price.toString().length)}</p>
+                <p>Utilize-se <strong>deste&nbsp;</strong><em>token</em> para realizar a troca do produto</p>
+                <ul>
+                <li>${data.token}</li>
+                </ul>
+                <hr />
+                <p><strong>Informa&ccedil;&otilde;es da compra:</strong></p>
+                <p>Local: ${user.company_name}</p>
+                <p>Vendedor: ${user.name}</p>
+                <p>Data da compra: ${moment(new Date()).format('LLL')}</p>
+                <p>A garantia &eacute; v&aacute;lida pros pr&oacute;ximos <span style="text-decoration: underline;">${days_to_warrante} dias</span> a partir da data da compra.</p>
+                <hr />
+                <p>&nbsp;</p>
+                <p>At&eacute; a pr&oacute;xima!</p>
+                <p>&nbsp;</p>`
+                // html body
+            };
+            await transporter.sendMail(mailOptions);
+        }
         return res.send({warranty});
     } catch (error) {
         return res.status(400).send(error);
