@@ -20,13 +20,13 @@ const userSchema = new Schema({
         },
         warranties: [
             {
-            type: Schema.Types.ObjectId,
-            ref: 'Warranty'
+                type: Schema.Types.ObjectId,
+                ref: 'Warranty'
             }
         ],
         warranties_obs: {
             type: String,
-            default: 'Sem observações'
+            default: 'Produto funcionando e sem arranhões'
         },
         password: {
             type: String,

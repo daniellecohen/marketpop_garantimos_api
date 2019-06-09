@@ -22,25 +22,29 @@ function generateToken() {
 
 router.post('/create', async(req, res) => {
     try {
-        const users = await User.find();
-        const user = await User.findOne({_id: req.tokendecoded});
+        const user = await User.findById(req.tokendecoded);
         
         let data = req.body;
         data.token = generateToken();
+        let unique_token = false;
 
-        for(var x = 0; x < users.length; x++) {
-            if(data.token == users[x].token) {
-                data.token = generateToken();
-                x = 0;
+        while(!unique_token) {
+            if(!await Warranty.findOne({token: data.token})) {
+                unique_token = true;
             }
         }
 
-        let days_to_warrent = data.warranty_date;
-        data.warranty_date = new Date().setDate(new Date().getDate()+days_to_warrent)
+        let days_to_warrante = data.warranty_date;
+        let date = new Date().setDate(new Date().getDate()+days_to_warrante);
+        data.warranty_date = new Date(date);
+        
+        data.client_name = `Cliente ${Date.now()}`;
+        data.exchange = 0;
 
         const warranty = await Warranty.create(data);
+
         user.warranties.push(warranty);
-        await user.save();
+        await User.findOneAndUpdate({_id: user._id}, user, {new: false});
 
         return res.send({warranty});
     } catch (error) {
@@ -58,7 +62,7 @@ router.post('/:token', async(req, res) => {
         if(new Date(warranty.warranty_date) > new Date()) {
             return res.send({warranty});
         } else {
-            return res.send({ops: 'the warranty date has passed'});
+            return res.send({warranty: 'the warranty date has passed'});
         };
     } catch (error) {
         return res.status(400).send(error);
@@ -73,9 +77,9 @@ router.put('/:token/exchange', async(req, res) => {
             return res.status(400).send({error: 'item doesnt exist'});
 
         let new_warranty_date = new Date().setDate(new Date().getDate()+req.body.warranty_date);
-        let exchange = warranty.exchange + 1;
+        let exchange = warranty.exchanges + 1;
 
-        await Warranty.findOneAndUpdate({token: req.params.token}, {warranty_date: new_warranty_date, exchange: exchange}, {new: false}, (err, warr) => {
+        await Warranty.findOneAndUpdate({token: req.params.token}, {warranty_date: new_warranty_date, exchanges: exchange}, {new: false}, (err, warr) => {
             if(!err)
                 return res.send({success: 'successfully updated'});
             else

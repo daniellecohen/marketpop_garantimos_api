@@ -22,8 +22,7 @@ const warrantySchema = new Schema({
             type: Number
         },
         client_name: {
-            type: String,
-            default: `Cliente ${Date.now()}`
+            type: String
         },
         token: {
             type: String,
