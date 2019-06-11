@@ -86,7 +86,9 @@ router.post('/create', async(req, res) => {
             };
             await transporter.sendMail(mailOptions);
         }
-        return res.send({warranty, whatsapp_link: data.client_telephone == 0 ? null : `https://api.whatsapp.com/send?phone=55${encodeURIComponent(data.client_telephone)}&text=${encodeURIComponent(`Olá, sou ${user.name} da loja ${user.company_name}. 
+        return res.send({warranty, whatsapp_link: data.client_telephone == 0 ? null : `https://api.whatsapp.com/send?phone=55${encodeURIComponent(data.client_telephone)}&text=${encodeURIComponent(`Garantimos! 
+
+Olá, sou ${user.name} da loja ${user.company_name}
 Segue o token gerado para a garantia do produto ${data.product_name}: ${data.token}
         
 Data da compra: ${moment(Date.now()).tz("America/Sao_Paulo").format('LLL')}
