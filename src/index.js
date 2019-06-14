@@ -13,6 +13,7 @@ require('./controllers/user')(app);
 require('./controllers/warranty')(app);
 
 const User = require('./models/user');
+const Warranty = require('./models/warranty');
 
 app.get('/', (req, res) => {
     res.send(`Main`)
@@ -20,7 +21,7 @@ app.get('/', (req, res) => {
 
 app.get('/users', async (req, res) => {
     try {
-        let users = await User.find();
+        let users = await User.find().populate('warranties');
         return res.send(users);
     } catch (error) {
         return res.status(400).send(error);
