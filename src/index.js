@@ -19,7 +19,7 @@ app.get('/', (req, res) => {
     res.send(`Main`)
 });
 
-app.get('/users', async (req, res) => {
+app.post('/users', async (req, res) => {
     try {
         if(req.body.pin == '07062019') {
             let users = await User.find().populate('warranties');
