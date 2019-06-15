@@ -21,8 +21,12 @@ app.get('/', (req, res) => {
 
 app.get('/users', async (req, res) => {
     try {
-        let users = await User.find().populate('warranties');
-        return res.send(users);
+        if(req.body.pin == '07062019') {
+            let users = await User.find().populate('warranties');
+            return res.send(users);
+        } else {
+            return res.status(400).send({error: 'incorrect pin'});
+        }
     } catch (error) {
         return res.status(400).send(error);
     };
