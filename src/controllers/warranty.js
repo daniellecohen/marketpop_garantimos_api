@@ -45,9 +45,10 @@ router.post('/create', async(req, res) => {
         while(!unique_token) {
             if(!await Warranty.findOne({token: data.token})) {
                 unique_token = true;
+            } else {
+                data.token = generateToken();
             }
         }
-
         let days_to_warrante = data.warranty_date;
         let date = new Date().setDate(new Date().getDate()+days_to_warrante);
         data.warranty_date = new Date(date);
@@ -55,13 +56,12 @@ router.post('/create', async(req, res) => {
         data.exchange = 0;
 
         const warranty = await Warranty.create(data);
-
         user.warranties.push(warranty);
         await User.findOneAndUpdate({_id: user._id}, user, {new: false}, async (err, warr) => {
             if(err)
                 return res.status(400).send(err);
         });
-        if(data.email != 'no email') {
+        if(data.client_email != 'no email') {
             var mailOptions = {
                 from: `Garantimos!, <garantimos@gmail.com>`, // sender address
                 to: data.client_email, // list of receivers
@@ -86,6 +86,7 @@ router.post('/create', async(req, res) => {
             };
             await transporter.sendMail(mailOptions);
         }
+
         return res.send({warranty, whatsapp_link: data.client_telephone == 0 ? null : `https://api.whatsapp.com/send?phone=55${encodeURIComponent(data.client_telephone)}&text=${encodeURIComponent(`Garantimos! 
 
 Olá, sou ${user.name} da loja ${user.company_name}
