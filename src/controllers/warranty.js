@@ -119,7 +119,7 @@ router.post('/:token', async(req, res) => {
         if(new Date(warranty.warranty_date) > new Date()) {
             return res.send({warranty});
         } else {
-            return res.send({warranty: 'the warranty date has passed'});
+            return res.send({warranty: false});
         };
     } catch (error) {
         return res.status(400).send(error);
