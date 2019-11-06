@@ -18,6 +18,9 @@ router.post("/", async (req, res) => {
   const user = await User.findOne({ _id: req.tokendecoded }).populate(
     "clients"
   );
+  let newPoints = parseInt(req.body.points);
+  if (!newPoints) newPoints = 1;
+  if (!Number.isInteger(newPoints)) newPoints = 1;
   let _client = "";
   for (let client of user.clients) {
     if (client.tel == req.body.tel) {
@@ -35,21 +38,34 @@ router.post("/", async (req, res) => {
         if (err) return res.status(400).send(err);
       }
     );
-    return res.send("client created");
-  } else {
-    await Client.findOneAndUpdate(
-      { _id: _client._id },
-      { points: _client.points + 1 },
+    await User.findByIdAndUpdate(
+      { _id: user.id },
+      { points: newPoints },
       { new: false },
       async (err, warr) => {
         if (err) return res.status(400).send(err);
       }
     );
+    return res.send("client created");
   }
-  return res.send(`client updated ${_client.points + 1}`);
+  await Client.findOneAndUpdate(
+    { _id: _client._id },
+    { points: _client.points + newPoints },
+    { new: false },
+    async (err, warr) => {
+      if (err) return res.status(400).send(err);
+    }
+  );
+  return res.send({
+    resp: `client updated`,
+    newPoints: _client.points + newPoints
+  });
 });
 
 router.put("/", async (req, res) => {
+  /*body
+  { tel - Tel of person who gonna have points removed ,
+    points - Points to remove }*/
   const user = await User.findOne({ _id: req.tokendecoded }).populate(
     "clients"
   );
@@ -62,13 +78,15 @@ router.put("/", async (req, res) => {
   if (_client === "") {
     return res.status(404).send("User not found");
   }
-  if (_client.points < user.rewardCount) {
+  let pointsToRemove = req.body.points;
+  if (!pointsToRemove) pointsToRemove = user.rewardCount;
+  if (_client.points < pointsToRemove) {
     return res.status(400).send("User does not have necessary points");
   }
 
   await Client.findOneAndUpdate(
     { _id: _client._id },
-    { points: _client.points - user.rewardCount },
+    { points: _client.points - pointsToRemove },
     { new: false },
     async (err, warr) => {
       if (err) return res.status(400).send(err);
