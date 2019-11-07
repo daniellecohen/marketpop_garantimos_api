@@ -86,7 +86,7 @@ router.put("/", async (req, res) => {
 
   await Client.findOneAndUpdate(
     { _id: _client._id },
-    { points: _client.points - pointsToRemove },
+    { points: _client.points - pointsToRemove, rewarded: _client.rewarded + 1 },
     { new: false },
     async (err, warr) => {
       if (err) return res.status(400).send(err);

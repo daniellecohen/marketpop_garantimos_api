@@ -12,6 +12,11 @@ const clientSchema = new Schema(
       type: Number,
       default: 1,
       required: true
+    },
+    rewarded: {
+      type: Number,
+      default: 0,
+      required: true
     }
   },
   {
