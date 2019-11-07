@@ -96,4 +96,31 @@ router.put("/", async (req, res) => {
   );
 });
 
+router.put("/name", async (req, res) => {
+  /*body
+  { tel - Tel of person who gonna have name changed ,
+  name - Points to remove }*/
+  const user = await User.findOne({ _id: req.tokendecoded }).populate(
+    "clients"
+  );
+  let _client = "";
+  for (let client of user.clients) {
+    if (client.tel == req.body.tel) {
+      _client = client;
+    }
+  }
+  if (_client === "") {
+    return res.status(404).send("User not found");
+  }
+  await Client.findOneAndUpdate(
+    { _id: _client._id },
+    { name: req.body.name },
+    { new: false },
+    async (err, warr) => {
+      if (err) return res.status(400).send(err);
+      return res.send("Name changed");
+    }
+  );
+});
+
 module.exports = app => app.use("/client", router);

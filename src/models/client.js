@@ -4,6 +4,9 @@ const Schema = mongoose.Schema;
 
 const clientSchema = new Schema(
   {
+    name: {
+      type: String
+    },
     tel: {
       type: String,
       required: true
