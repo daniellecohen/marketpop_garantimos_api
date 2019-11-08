@@ -22,6 +22,9 @@ const userSchema = new Schema(
       required: true,
       select: false
     },
+    message: {
+      type: String
+    },
     reward: {
       type: String
     },
