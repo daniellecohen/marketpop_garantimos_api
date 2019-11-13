@@ -27,6 +27,21 @@ router.post("/", async (req, res) => {
       _client = client;
     }
   }
+
+  if (req.body.loyaltyNumber) {
+    let loyaltyPerson = null;
+    for (let client of user.clients) {
+      if (client.tel == req.body.loyaltyNumber) {
+        loyaltyPerson = client;
+      }
+    }
+    await Client.findOneAndUpdate(
+      { _id: loyaltyPerson._id },
+      { points: loyaltyPerson.points + 1 },
+      { new: false },
+      async (err, warr) => {}
+    );
+  }
   if (_client === "") {
     let client = await Client.create(req.body);
     user.clients.push(client);
@@ -46,7 +61,10 @@ router.post("/", async (req, res) => {
         if (err) return res.status(400).send(err);
       }
     );
-    return res.send("client created");
+    return res.send({
+      resp: `client updated`,
+      newPoints: _client.points + newPoints
+    });
   }
   await Client.findOneAndUpdate(
     { _id: _client._id },
