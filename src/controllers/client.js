@@ -41,6 +41,7 @@ router.post("/", async (req, res) => {
       { new: false },
       async (err, warr) => {}
     );
+    newPoints++;
   }
   if (_client === "") {
     let client = await Client.create(req.body);
