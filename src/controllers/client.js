@@ -64,7 +64,7 @@ router.post("/", async (req, res) => {
     );
     return res.send({
       resp: `client updated`,
-      newPoints: _client.points + newPoints
+      newPoints: newPoints
     });
   }
   await Client.findOneAndUpdate(
