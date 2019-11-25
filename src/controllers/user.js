@@ -24,6 +24,8 @@ router.put("/update", async (req, res) => {
   try {
     if (req.body.password)
       return res.status(400).send("You can't change your password here");
+    if (req.body.admin)
+      return res.status(400).send("You can't change admin type here");
     await User.findOneAndUpdate(
       { _id: req.tokendecoded },
       req.body,
@@ -64,6 +66,22 @@ router.get("/all", async (req, res) => {
     return res.json(users);
   } catch (error) {
     return res.status(500).send(error);
+  }
+});
+
+router.put("/admin", async (req, res) => {
+  try {
+    await User.findOneAndUpdate(
+      { email: req.body.email },
+      { admin: Boolean(req.body.admin) },
+      { new: false },
+      (err, user) => {
+        if (!err) return res.send({ success: `successfully updated` });
+        else return res.status(400).send(err);
+      }
+    );
+  } catch (error) {
+    return res.status(400).send(err);
   }
 });
 
