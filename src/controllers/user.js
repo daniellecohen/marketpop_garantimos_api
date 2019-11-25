@@ -49,4 +49,22 @@ router.delete("/delete", async (req, res) => {
   }
 });
 
+router.get("/all", async (req, res) => {
+  try {
+    let user = await User.findOne({ _id: req.tokendecoded });
+    if (!user.admin) {
+      return res.status(401).send({ error: "User not a admin" });
+    }
+  } catch (error) {
+    return res.status(500).send({ error: "internal error" });
+  }
+
+  try {
+    const users = await User.find().populate("clients");
+    return res.json(users);
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+});
+
 module.exports = app => app.use("/user", router);

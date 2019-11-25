@@ -37,7 +37,11 @@ const userSchema = new Schema(
         type: Schema.Types.ObjectId,
         ref: "Client"
       }
-    ]
+    ],
+    admin: {
+      type: Boolean,
+      default: false
+    }
   },
   {
     timestamps: true
