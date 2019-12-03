@@ -28,8 +28,9 @@ router.post("/", async (req, res) => {
     }
   }
 
-  if (req.body.loyaltyNumber && _client == "") {
+  if (req.body.loyaltyNumber && _client === "") {
     let loyaltyPerson = null;
+    newPoints += 1;
     for (let client of user.clients) {
       if (client.tel == req.body.loyaltyNumber) {
         loyaltyPerson = client;
@@ -41,7 +42,6 @@ router.post("/", async (req, res) => {
       { new: false },
       async (err, warr) => {}
     );
-    newPoints++;
   }
   if (_client === "") {
     let client = await Client.create(req.body);
@@ -51,19 +51,34 @@ router.post("/", async (req, res) => {
       user,
       { new: false },
       async (err, warr) => {
-        if (err) return res.status(400).send(err);
+        if (err) return res.status(500).send(err);
       }
     );
-    await User.findByIdAndUpdate(
-      { _id: user.id },
-      { points: newPoints },
+    for (let client of user.clients) {
+      if (client.tel == req.body.tel) {
+        _client = client;
+      }
+    }
+    await Client.findOneAndUpdate(
+      { _id: _client._id },
+      { points: _client.points + newPoints - 1 },
       { new: false },
       async (err, warr) => {
         if (err) return res.status(400).send(err);
       }
     );
+
+    /*
+    await User.findByIdAndUpdate(
+      { _id: user.id },
+      { points: newPoints },
+      { new: false },
+      async (err, warr) => {
+        if (err) return res.status(401).send(err);
+      }
+    );*/
     return res.send({
-      resp: `client updated`,
+      resp: `client created`,
       newPoints: newPoints
     });
   }
