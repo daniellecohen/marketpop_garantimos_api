@@ -28,7 +28,7 @@ router.post("/", async (req, res) => {
     }
   }
 
-  if (req.body.loyaltyNumber) {
+  if (req.body.loyaltyNumber && _client == "") {
     let loyaltyPerson = null;
     for (let client of user.clients) {
       if (client.tel == req.body.loyaltyNumber) {
