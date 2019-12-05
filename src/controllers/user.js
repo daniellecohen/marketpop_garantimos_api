@@ -1,4 +1,5 @@
 require("dotenv").config();
+const bcrypt = require("bcryptjs");
 
 const express = require("express");
 
@@ -40,6 +41,40 @@ router.put("/update", async (req, res) => {
   }
 });
 
+router.put("/change", async (req, res) => {
+  let user = "";
+  try {
+    user = await User.findOne({ _id: req.tokendecoded });
+    if (!user.admin) {
+      return res.status(401).send({ error: "User not a admin" });
+    }
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+  if (user == "") return res.status(404).send({ error: "User not found" });
+
+  try {
+    let { userID } = req.body;
+    delete req.body.userID;
+    if (!userID) return res.status(404).send({ error: "UserID not found" });
+
+    if (req.body.password) {
+      const hash = await bcrypt.hash(req.body.password, 10);
+      req.body.password = hash;
+    }
+    await User.findOneAndUpdate(
+      { _id: userID },
+      req.body,
+      { new: false },
+      (err, user) => {
+        if (!err) return res.send({ success: "successfully updated" });
+        else return res.status(400).send(err);
+      }
+    );
+  } catch (error) {
+    return res.status(500).send(err);
+  }
+});
 router.delete("/delete", async (req, res) => {
   try {
     await User.findOneAndRemove({ _id: req.tokendecoded }, (err, user) => {

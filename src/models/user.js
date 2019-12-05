@@ -6,8 +6,7 @@ const Schema = mongoose.Schema;
 const userSchema = new Schema(
   {
     company_name: {
-      type: String,
-      default: "Barraca do(a) Fulano(a)"
+      type: String
     },
     telephone: {
       type: Number,
@@ -19,8 +18,7 @@ const userSchema = new Schema(
     },
     password: {
       type: String,
-      required: true,
-      select: false
+      required: true
     },
     message: {
       type: String
