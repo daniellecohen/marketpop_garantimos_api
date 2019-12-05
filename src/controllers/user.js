@@ -42,16 +42,14 @@ router.put("/update", async (req, res) => {
 });
 
 router.put("/change", async (req, res) => {
-  let user = "";
   try {
-    user = await User.findOne({ _id: req.tokendecoded });
+    let user = await User.findOne({ _id: req.tokendecoded });
     if (!user.admin) {
       return res.status(401).send({ error: "User not a admin" });
     }
   } catch (err) {
     return res.status(500).send(err);
   }
-  if (user == "") return res.status(404).send({ error: "User not found" });
 
   try {
     let { userID } = req.body;
