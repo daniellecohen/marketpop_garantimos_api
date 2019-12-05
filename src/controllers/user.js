@@ -11,7 +11,10 @@ const User = require("../models/user");
 router.post("/", async (req, res) => {
   try {
     let user = await User.findOne({ _id: req.body.id }).populate("clients");
-    return res.send({ user });
+    let data = {};
+    data.company_name = user.company_name;
+    data.address = user.address;
+    return res.send({ data });
   } catch (error) {
     return res.status(500).send({ error: "internal error" });
   }
