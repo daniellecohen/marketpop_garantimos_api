@@ -6,10 +6,18 @@ const express = require("express");
 const tokenMiddleware = require("../middlewares/token");
 
 const router = express.Router();
-router.use(tokenMiddleware);
 
 const User = require("../models/user");
+router.post("/", async (req, res) => {
+  try {
+    let user = await User.findOne({ _id: req.body.id }).populate("clients");
+    return res.send({ user });
+  } catch (error) {
+    return res.status(500).send({ error: "internal error" });
+  }
+});
 
+router.use(tokenMiddleware);
 router.get("/", async (req, res) => {
   try {
     let user = await User.findOne({ _id: req.tokendecoded }).populate(
