@@ -27,6 +27,9 @@ const userSchema = new Schema(
     reward: {
       type: String
     },
+    address: {
+      type: String
+    },
     rewardCount: {
       type: Number,
       default: 10
