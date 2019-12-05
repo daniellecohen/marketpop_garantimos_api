@@ -27,6 +27,9 @@ const userSchema = new Schema(
     reward: {
       type: String
     },
+    site: {
+      type: String
+    },
     address: {
       type: String
     },
