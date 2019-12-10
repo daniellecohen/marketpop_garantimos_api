@@ -20,6 +20,11 @@ const clientSchema = new Schema(
       type: Number,
       default: 0,
       required: true
+    },
+    indicated: {
+      type: Number,
+      default: 0,
+      required: true
     }
   },
   {

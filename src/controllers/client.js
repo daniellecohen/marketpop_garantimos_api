@@ -64,7 +64,10 @@ router.post("/", async (req, res) => {
 
     await Client.findOneAndUpdate(
       { _id: loyaltyPerson._id },
-      { points: loyaltyPerson.points + 1 },
+      {
+        points: loyaltyPerson.points + 1,
+        indicated: loyaltyPerson.indicated + 1
+      },
       { new: false },
       async (err, warr) => {}
     );
