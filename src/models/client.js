@@ -13,7 +13,7 @@ const clientSchema = new Schema(
     },
     points: {
       type: Number,
-      default: 1,
+      default: 0,
       required: true
     },
     rewarded: {

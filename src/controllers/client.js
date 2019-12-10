@@ -18,34 +18,23 @@ router.post("/", async (req, res) => {
   const user = await User.findOne({ _id: req.tokendecoded }).populate(
     "clients"
   );
-  let newPoints = parseInt(req.body.points);
-  if (!newPoints) newPoints = 1;
-  if (!Number.isInteger(newPoints)) newPoints = 1;
+
+  let pointsToAdd = parseInt(req.body.points);
+  if (!pointsToAdd || !Number.isInteger(pointsToAdd)) pointsToAdd = 1;
+
   let _client = "";
+  let newUser = true;
   for (let client of user.clients) {
     if (client.tel == req.body.tel) {
       _client = client;
+      newUser = false;
     }
   }
 
-  if (req.body.loyaltyNumber && _client === "") {
-    let loyaltyPerson = null;
-    newPoints += 1;
-    for (let client of user.clients) {
-      if (client.tel == req.body.loyaltyNumber) {
-        loyaltyPerson = client;
-      }
-    }
-    await Client.findOneAndUpdate(
-      { _id: loyaltyPerson._id },
-      { points: loyaltyPerson.points + 1 },
-      { new: false },
-      async (err, warr) => {}
-    );
-  }
-  if (_client === "") {
-    let client = await Client.create(req.body);
+  if (newUser) {
+    let client = await Client.create({ tel: req.body.tel });
     user.clients.push(client);
+
     await User.findOneAndUpdate(
       { _id: user._id },
       user,
@@ -54,45 +43,45 @@ router.post("/", async (req, res) => {
         if (err) return res.status(500).send(err);
       }
     );
+
     for (let client of user.clients) {
       if (client.tel == req.body.tel) {
         _client = client;
       }
     }
-    await Client.findOneAndUpdate(
-      { _id: _client._id },
-      { points: _client.points + newPoints - 1 },
-      { new: false },
-      async (err, warr) => {
-        if (err) return res.status(400).send(err);
-      }
-    );
-
-    /*
-    await User.findByIdAndUpdate(
-      { _id: user.id },
-      { points: newPoints },
-      { new: false },
-      async (err, warr) => {
-        if (err) return res.status(401).send(err);
-      }
-    );*/
-    return res.send({
-      resp: `client created`,
-      newPoints: newPoints
-    });
   }
+  if (!_client) if (err) return res.status(500).send(err);
+
+  //Caso seja novo usuario e tenha sido indicado
+  if (req.body.loyaltyNumber && newUser) {
+    pointsToAdd += 1;
+
+    for (let client of user.clients) {
+      if (client.tel == req.body.loyaltyNumber) {
+        loyaltyPerson = client;
+      }
+    }
+
+    await Client.findOneAndUpdate(
+      { _id: loyaltyPerson._id },
+      { points: loyaltyPerson.points + 1 },
+      { new: false },
+      async (err, warr) => {}
+    );
+  }
+
   await Client.findOneAndUpdate(
     { _id: _client._id },
-    { points: _client.points + newPoints },
+    { points: _client.points + pointsToAdd },
     { new: false },
     async (err, warr) => {
       if (err) return res.status(400).send(err);
     }
   );
+
   return res.send({
     resp: `client updated`,
-    newPoints: _client.points + newPoints
+    newPoints: _client.points + pointsToAdd
   });
 });
 
