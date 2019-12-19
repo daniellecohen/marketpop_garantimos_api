@@ -8,6 +8,8 @@ const tokenMiddleware = require("../middlewares/token");
 const router = express.Router();
 
 const User = require("../models/user");
+const Coupon = require("../models/coupon");
+
 router.post("/", async (req, res) => {
   try {
     let user = await User.findOne({ _id: req.body.id }).populate("clients");
@@ -127,6 +129,62 @@ router.put("/admin", async (req, res) => {
     );
   } catch (error) {
     return res.status(400).send(err);
+  }
+});
+
+router.post("/coupon", async (req, res) => {
+  try {
+    let user;
+    try {
+      user = await User.findOne({ _id: req.tokendecoded });
+      if (!user.admin) {
+        return res.status(401).send({ error: "User not a admin" });
+      }
+    } catch (error) {
+      return res.status(500).send({ error: "internal error1" });
+    }
+
+    try {
+      let code = req.body.code;
+      if (!code) return res.status(401).send({ error: "code is required" });
+      let _coupon = await Coupon.create({
+        createdBy: user._id,
+        code: req.body.code
+      });
+      return res.send(_coupon);
+    } catch (error) {
+      return res.status(500).send({ message: "internal error", error });
+    }
+  } catch (error) {
+    return res.status(400).send(err);
+  }
+});
+
+router.get("/coupon", async (req, res) => {
+  try {
+    try {
+      let user = await User.findOne({ _id: req.tokendecoded });
+      if (!user.admin) {
+        return res.status(401).send({ error: "User not a admin" });
+      }
+    } catch (error) {
+      return res.status(500).send({ error: "internal error1" });
+    }
+    let allUsers;
+    try {
+      allUsers = await User.find();
+    } catch (error) {
+      return res.status(500).send({ error: "internal error" });
+    }
+
+    try {
+      let coupons = await Coupon.find();
+      return res.send(coupons);
+    } catch (error) {
+      return res.status(400).send(err);
+    }
+  } catch (error) {
+    return res.status(500).send({ error: "internal error" });
   }
 });
 
