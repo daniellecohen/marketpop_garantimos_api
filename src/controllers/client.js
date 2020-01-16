@@ -124,9 +124,7 @@ router.put("/", async (req, res) => {
 
 router.delete("/", async (req, res) => {
   /*{tel (Telephone of person who gonna be deleted)} */
-  const user = await User.findOne({ _id: req.tokendecoded }).populate(
-    "clients"
-  );
+  const user = await User.findOne({ _id: req.body._id }).populate("clients");
   let _client = "";
   for (let client of user.clients) {
     if (client.tel == req.body.tel) {
