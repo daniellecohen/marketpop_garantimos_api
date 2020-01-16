@@ -90,7 +90,7 @@ router.post("/", async (req, res) => {
 
 router.put("/", async (req, res) => {
   /*body
-  { tel - Tel of person who gonna have points removed ,
+  { tel - Telephone of person who gonna have points removed ,
     points - Points to remove }*/
   const user = await User.findOne({ _id: req.tokendecoded }).populate(
     "clients"
@@ -122,9 +122,33 @@ router.put("/", async (req, res) => {
   );
 });
 
+router.delete("/", async (req, res) => {
+  /*{tel (Telephone of person who gonna be deleted)} */
+  const user = await User.findOne({ _id: req.tokendecoded }).populate(
+    "clients"
+  );
+  let _client = "";
+  for (let client of user.clients) {
+    if (client.tel == req.body.tel) {
+      _client = client;
+    }
+  }
+  if (_client === "") {
+    return res.status(404).send("User not found");
+  }
+  await Client.findOneAndDelete(
+    { _id: _client._id },
+    { new: false },
+    async (err, warr) => {
+      if (err) return res.status(400).send(err);
+      return res.send("Telephone removed");
+    }
+  );
+});
+
 router.put("/name", async (req, res) => {
   /*body
-  { tel - Tel of person who gonna have name changed ,
+  { tel - Telephone of person who gonna have name changed ,
   name - Points to remove }*/
   const user = await User.findOne({ _id: req.tokendecoded }).populate(
     "clients"
