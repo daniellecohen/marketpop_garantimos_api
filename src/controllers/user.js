@@ -17,6 +17,9 @@ router.post("/", async (req, res) => {
     data.company_name = user.company_name;
     data.address = user.address;
     if (user.site) data.site = user.site;
+    if (user.facebook) data.facebook = user.facebook;
+    if (user.instagram) data.instagram = user.instagram;
+    if (user.twitter) data.twitter = user.twitter;
     return res.send(data);
   } catch (error) {
     return res.status(500).send({ error: "internal error" });
