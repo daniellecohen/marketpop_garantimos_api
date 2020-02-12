@@ -30,6 +30,15 @@ const userSchema = new Schema(
     site: {
       type: String
     },
+    facebook: {
+      type: String
+    },
+    instagram: {
+      type: String
+    },
+    twitter: {
+      type: String
+    },
     address: {
       type: String
     },

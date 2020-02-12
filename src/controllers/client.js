@@ -21,6 +21,7 @@ router.post("/", async (req, res) => {
 
   let pointsToAdd = parseInt(req.body.points);
   if (!pointsToAdd || !Number.isInteger(pointsToAdd)) pointsToAdd = 1;
+  if (req.body.points === 0) pointsToAdd = 0;
 
   let _client = "";
   let newUser = true;
