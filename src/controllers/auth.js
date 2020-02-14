@@ -92,24 +92,23 @@ router.post("/forgot-password", async (req, res) => {
         if (err) return res.status(500).send(err);
       }
     );
-    mailer.sendMail(
+    await mailer.sendMail(
       {
         to: email,
-        from: "teste@teste.com",
+        from: "noreply@pingui.com.br",
         template: "forgot-password",
         subject: "Troca de senha PINGUI",
         context: { token }
       },
-      err => {
-        if (err)
+      (err, info) => {
+        if (err) {
           return res
             .status(400)
             .send({ error: "Cannot send forgot password email" });
-
-        return res.send();
+        }
+        return res.send({ message: "email sended" });
       }
     );
-    return res.send({ message: "email sended" });
   } catch (error) {
     console.log(error);
     return res
