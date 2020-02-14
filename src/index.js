@@ -15,7 +15,8 @@ require("./controllers/client")(app);
 const User = require("./models/user");
 
 app.get("/", (req, res) => {
-  res.send(`Main`);
+  console.log(process.env.LOCATION);
+  res.send(`${process.env.LOCATION || "Main"}`);
 });
 
 app.listen(process.env.PORT, () => {
