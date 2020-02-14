@@ -19,6 +19,7 @@
     "moment-timezone": "^0.5.25",
     "mongoose": "^5.5.13",
     "nodemailer": "^6.2.1",
+    "nodemailer-express-handlebars": "^3.1.0",
     "puretext": "^0.1.5"
   }
 }

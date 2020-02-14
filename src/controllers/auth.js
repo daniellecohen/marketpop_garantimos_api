@@ -1,5 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
+const mailer = require("./../modules/mailer");
 
 const jwt = require("jsonwebtoken");
 const tokenProvider = require("../config/token.json");
@@ -65,6 +67,54 @@ router.post("/", async (req, res) => {
     return res.send({ token });
   } catch (error) {
     return res.status(500).send(error);
+  }
+});
+
+router.post("/forgot-password", async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email }).select("+passwordResetToken");
+    if (!user) return res.status(401).send({ error: "user doesnt exist" });
+
+    const token = crypto.randomBytes(20).toString("hex");
+    const now = new Date();
+    now.setHours(now.getHours() + 1);
+
+    user.passwordResetToken = token;
+    user.passwordResetExpires = now;
+
+    await User.findOneAndUpdate(
+      { _id: user._id },
+      user,
+      { new: false },
+      async (err, warr) => {
+        if (err) return res.status(500).send(err);
+      }
+    );
+    mailer.sendMail(
+      {
+        to: email,
+        from: "teste@teste.com",
+        template: "forgot-password",
+        subject: "Troca de senha PINGUI",
+        context: { token }
+      },
+      err => {
+        if (err)
+          return res
+            .status(400)
+            .send({ error: "Cannot send forgot password email" });
+
+        return res.send();
+      }
+    );
+    return res.send({ ta: "indo" });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .send({ error: "Error on forgot password, try again" });
   }
 });
 
