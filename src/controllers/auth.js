@@ -109,7 +109,7 @@ router.post("/forgot-password", async (req, res) => {
         return res.send();
       }
     );
-    return res.send({ ta: "indo" });
+    return res.send({ message: "email sended" });
   } catch (error) {
     console.log(error);
     return res
@@ -117,5 +117,36 @@ router.post("/forgot-password", async (req, res) => {
       .send({ error: "Error on forgot password, try again" });
   }
 });
+router.put("/forgot-password", async (req, res) => {
+  const { email, token, password } = req.body;
+  if (!token || !password || !email) {
+    return res.send({
+      error: "email, token and password needed to change a user password"
+    });
+  }
+  try {
+    let user = await User.findOne({ email }).select(
+      "+passwordResetToken passwordResetExpires"
+    );
+    if (!user) return res.status(404).send({ error: "user not found" });
 
+    let now = new Date();
+    if (now > user.passwordResetExpires)
+      return res
+        .status(401)
+        .send({ error: "Token expired, generate a new one" });
+
+    user.password = password;
+    user.passwordResetExpires = now;
+    await user.save();
+    const loginToken = jwt.sign({ id: user._id }, tokenProvider.secret, {
+      expiresIn: 311040000
+    });
+    return res.send({ token: loginToken });
+  } catch (err) {
+    return res
+      .status(500)
+      .send({ error: "Error on change password, try again" });
+  }
+});
 module.exports = app => app.use("/auth", router);
