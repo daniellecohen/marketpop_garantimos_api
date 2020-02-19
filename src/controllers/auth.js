@@ -105,7 +105,7 @@ router.post("/forgot-password", async (req, res) => {
             process.env.LOCATION == "PROD"
               ? "https://bytemetech.github.io/fidelizapp-web/"
               : "https://sharp-einstein-89f586.netlify.com"
-          }/reset-password.html?token=f3198ff039c1fe6005f2bd9539a22576c6025aeb`
+          }/reset-password.html?token=${token}`
         }
       },
       (err, info) => {
@@ -136,8 +136,10 @@ router.put("/forgot-password", async (req, res) => {
       "+passwordResetToken passwordResetExpires"
     );
     if (!user) return res.status(404).send({ error: "user not found" });
-    if (passwordResetToken != token)
-      res.status(401).send({ error: "Token wrong" });
+    if (user.passwordResetToken != token) {
+      console.log(token, user.passwordResetToken);
+      return res.status(401).send({ error: "Token wrong" });
+    }
     let now = new Date();
     if (now > user.passwordResetExpires)
       return res
@@ -152,9 +154,10 @@ router.put("/forgot-password", async (req, res) => {
     });
     return res.send({ token: loginToken });
   } catch (err) {
-    return res
-      .status(500)
-      .send({ error: "Error on change password, try again" });
+    return res.status(500).send({
+      error: "Error on change password, try again",
+      errorMessage: err
+    });
   }
 });
 module.exports = app => app.use("/auth", router);
