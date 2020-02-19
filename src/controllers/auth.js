@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
@@ -98,7 +100,13 @@ router.post("/forgot-password", async (req, res) => {
         from: "noreply@pingui.com.br",
         template: "forgot-password",
         subject: "Troca de senha PINGUI",
-        context: { token }
+        context: {
+          link: `${
+            process.env.LOCATION == "PROD"
+              ? "https://bytemetech.github.io/fidelizapp-web/"
+              : "https://sharp-einstein-89f586.netlify.com"
+          }/reset-password.html?token=f3198ff039c1fe6005f2bd9539a22576c6025aeb`
+        }
       },
       (err, info) => {
         if (err) {
@@ -128,7 +136,8 @@ router.put("/forgot-password", async (req, res) => {
       "+passwordResetToken passwordResetExpires"
     );
     if (!user) return res.status(404).send({ error: "user not found" });
-
+    if (passwordResetToken != token)
+      res.status(401).send({ error: "Token wrong" });
     let now = new Date();
     if (now > user.passwordResetExpires)
       return res
