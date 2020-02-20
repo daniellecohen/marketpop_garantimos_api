@@ -127,7 +127,7 @@ router.post("/forgot-password", async (req, res) => {
 router.put("/forgot-password", async (req, res) => {
   const { email, token, password } = req.body;
   if (!token || !password || !email) {
-    return res.send({
+    return res.status(400).send({
       error: "email, token and password needed to change a user password"
     });
   }
