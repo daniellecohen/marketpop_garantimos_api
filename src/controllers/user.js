@@ -20,6 +20,7 @@ router.post("/", async (req, res) => {
     if (user.facebook) data.facebook = user.facebook;
     if (user.instagram) data.instagram = user.instagram;
     if (user.twitter) data.twitter = user.twitter;
+    if (user.sex) data.sex = user.sex;
     return res.send(data);
   } catch (error) {
     return res.status(500).send({ error: "internal error" });

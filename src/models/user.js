@@ -63,6 +63,12 @@ const userSchema = new Schema(
     passwordResetExpires: {
       type: Date,
       select: false
+    },
+    {
+      sex: {
+        type: String,
+        default: "fem"
+      }
     }
   },
   {
