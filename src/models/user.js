@@ -64,12 +64,10 @@ const userSchema = new Schema(
       type: Date,
       select: false
     },
-    {
       sex: {
         type: String,
         default: "fem"
       }
-    }
   },
   {
     timestamps: true
