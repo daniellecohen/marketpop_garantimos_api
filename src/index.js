@@ -11,6 +11,7 @@ app.use(express.urlencoded({ extended: true }));
 require("./controllers/auth")(app);
 require("./controllers/user")(app);
 require("./controllers/client")(app);
+require("./controllers/general")(app);
 
 const User = require("./models/user");
 
