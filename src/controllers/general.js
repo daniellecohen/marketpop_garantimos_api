@@ -14,7 +14,6 @@ const General = require("../models/general");
 
 // Deixando claro que esse código está errado, não se faz isso. Foi uma solução rápida para colocar para funcionar logo.
 
-// router.use(tokenMiddleware);
 
 router.get("/nextcoupon", async (req, res) => {
     try {
@@ -57,17 +56,19 @@ router.get("/nextcoupon", async (req, res) => {
 
 
   //Criar cupom em massa (10 em 10)
+  router.use(tokenMiddleware);
   router.post("/masscoupon", async (req, res) => {
-    // try {
-        // let user;
-        // try {
-        //   user = await User.findOne({ _id: req.tokendecoded });
-        //   if (!user.admin) {
-        //     return res.status(401).send({ error: "User not a admin" });
-        //   }
-        // } catch (error) {
-        //   return res.status(500).send({ error: "internal error1" });
-        // }
+
+    try {
+        let user;
+        try {
+          user = await User.findOne({ _id: req.tokendecoded });
+          if (!user.admin) {
+            return res.status(401).send({ error: "User not a admin" });
+          }
+        } catch (error) {
+          return res.status(500).send({ error: "internal error1" });
+        }
   
       try {
         let initialcode = req.body.initialcode;
@@ -90,10 +91,10 @@ router.get("/nextcoupon", async (req, res) => {
       } catch (error) {
         return res.status(500).send({ message: "internal error", error });
       }
-    // } 
-    // catch (error) {
-    //   return res.status(400).send(err);
-    // }
+    } 
+    catch (error) {
+      return res.status(400).send(err);
+    }
   });
 
 module.exports = app => app.use("/general", router);
