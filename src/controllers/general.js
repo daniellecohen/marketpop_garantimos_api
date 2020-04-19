@@ -54,6 +54,55 @@ router.get("/nextcoupon", async (req, res) => {
     }
   });
 
+  router.get("/telephoneexists", async (req, res) => {
+
+    try {
+        let user;
+        try {
+          console.log(String(req.body.telephone));
+          user = await User.findOne({ telephone: req.body.telephone });
+          if (user) {
+            res.send(true);
+
+          } else {
+            res.send(false);
+
+          }
+        } catch (error) {
+          return res.status(500).send({ error: "internal error1" });
+        }
+  
+    } 
+    catch (error) {
+      return res.status(400).send(err);
+    }
+  });
+
+  router.get("/emailexists", async (req, res) => {
+
+    try {
+        let user;
+        try {
+          console.log(String(req.body.email));
+          user = await User.findOne({ email: req.body.email });
+          if (user) {
+            res.send(true);
+
+          } else {
+            res.send(false);
+
+          }
+        } catch (error) {
+          return res.status(500).send({ error: "internal error1" });
+        }
+  
+    } 
+    catch (error) {
+      return res.status(400).send(err);
+    }
+  });
+
+
 
   //Criar cupom em massa (10 em 10)
   router.use(tokenMiddleware);
@@ -96,5 +145,6 @@ router.get("/nextcoupon", async (req, res) => {
       return res.status(400).send(err);
     }
   });
+
 
 module.exports = app => app.use("/general", router);
