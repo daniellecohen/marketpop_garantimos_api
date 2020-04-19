@@ -54,7 +54,8 @@ router.get("/nextcoupon", async (req, res) => {
     }
   });
 
-  router.get("/telephoneexists", async (req, res) => {
+  // era pra ser get mas fiz post pra poder aceitar o body. Deveria ter feito get com a variavel na url, mas ia demorar mais
+  router.post("/telephoneexists", async (req, res) => {
 
     try {
         let user;
@@ -78,7 +79,8 @@ router.get("/nextcoupon", async (req, res) => {
     }
   });
 
-  router.get("/emailexists", async (req, res) => {
+  // era pra ser get mas fiz post pra poder aceitar o body. Deveria ter feito get com a variavel na url, mas ia demorar mais
+  router.post("/emailexists", async (req, res) => {
 
     try {
         let user;
