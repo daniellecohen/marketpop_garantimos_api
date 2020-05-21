@@ -56,7 +56,7 @@ buck-out/
 *.jsbundle
 
 # Ambience Variables
-*.env
+.env
 
 # Terraform
 
